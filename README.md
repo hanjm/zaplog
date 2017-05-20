@@ -1,9 +1,10 @@
 ## A wrapped zap log tool
 
-zaplog是包装了[zap](https://github.com/uber-go/zap)、用于生产环境的日志输出工具, 它通过设置log.SetOutput()使所有使用标准库log的包的日志输出标准化为行json格式.
-NewLogger()返回一个会记录日志发生行的文件名的logger, 格式为 文件名:行号:函数名, 如"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
-NewNoCallerLogger()返回一个不记录日志发生行的logger, 用于http api server的access log.
-## Document 
+zaplog是包装了[zap](https://github.com/uber-go/zap)、用于生产环境的日志输出工具
+`FormatStdLog()` 通过设置log.SetOutput()使所有使用标准库log的包的日志输出标准化为行json格式.
+`NewLogger()` 返回一个会记录日志发生行的文件名的logger, 格式为 文件名:行号:函数名, 如"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
+`NewNoCallerLogger()` 返回一个不记录日志发生行的logger, 用于http api server的access log.
+## PACKAGE DOCUMENTATION 
 
 ```
 package zaplog
@@ -16,6 +17,9 @@ func CallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder
     CallerEncoder will add caller to log. format is
     "filename:lineNum:funcName",
     e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
+
+func FormatStdLog()
+    FormatStdLog set the output of stand package log to zaplog
 
 func NewCompatibleLogger(debugLevel bool) (compatibleLogger *zapgrpc.Logger)
     NewCompatibleLogger return a logger which compatible to std log package
@@ -32,5 +36,7 @@ func NewLogger(debugLevel bool) (logger *zap.Logger)
 
 func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger)
     NewNoCallerLogger return a no caller key value, will be faster
+
+
 
 ```

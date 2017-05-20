@@ -10,27 +10,7 @@ import (
 	"strings"
 )
 
-func init() {
-	log.SetFlags(log.Llongfile)
-	log.SetOutput(&zapWriter{NewNoCallerLogger(false)})
-}
 
-type zapWriter struct {
-	logger *zap.Logger
-}
-
-// Write implement io.Writer, as std log's output
-func (w zapWriter) Write(p []byte) (n int, err error) {
-	i := bytes.Index(p, []byte(":")) + 1
-	j := bytes.Index(p[i:], []byte(":")) + 1 + i
-	caller := bytes.TrimRight(p[:j], ":")
-	// last index of /
-	i = bytes.LastIndex(caller, []byte("/"))
-	// penultimate index of /
-	i = bytes.LastIndex(caller[:i], []byte("/"))
-	w.logger.Info("stdLog", zap.ByteString("caller", caller[i+1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
-	return len(p), nil
-}
 
 // CallerEncoder will add caller to log. format is "filename:lineNum:funcName", e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
 func CallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
@@ -91,4 +71,27 @@ func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger) {
 func NewCompatibleLogger(debugLevel bool) (compatibleLogger *zapgrpc.Logger) {
 	compatibleLogger = zapgrpc.NewLogger(NewNoCallerLogger(debugLevel).WithOptions(zap.AddCallerSkip(1)))
 	return
+}
+
+// FormatStdLog set the output of stand package log to zaplog
+func FormatStdLog() {
+	log.SetFlags(log.Llongfile)
+	log.SetOutput(&logWriter{NewNoCallerLogger(false)})
+}
+
+type logWriter struct {
+	logger *zap.Logger
+}
+
+// Write implement io.Writer, as std log's output
+func (w logWriter) Write(p []byte) (n int, err error) {
+	i := bytes.Index(p, []byte(":")) + 1
+	j := bytes.Index(p[i:], []byte(":")) + 1 + i
+	caller := bytes.TrimRight(p[:j], ":")
+	// find last index of /
+	i = bytes.LastIndex(caller, []byte("/"))
+	// find penultimate index of /
+	i = bytes.LastIndex(caller[:i], []byte("/"))
+	w.logger.Info("stdLog", zap.ByteString("caller", caller[i+1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
+	return len(p), nil
 }

@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func TestStdLogger(t *testing.T) {
+func TestFormatStdLog(t *testing.T) {
+	FormatStdLog()
 	log.Print("std log")
 	log.Print("")
 }
