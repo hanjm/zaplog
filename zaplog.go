@@ -177,17 +177,17 @@ func (l CompatibleLogger) Panicf(format string, args ...interface{}) {
 	l._log.Panic(fmt.Sprintf(format, args...))
 }
 
-// With return a logger with a extra field.
+// With return a logger with an extra field.
 func (l *CompatibleLogger) With(key string, value interface{}) *CompatibleLogger {
 	return &CompatibleLogger{l._log.With(zap.Any(key, value))}
 }
 
-// WithField return a logger with a extra field.
+// WithField return a logger with an extra field.
 func (l *CompatibleLogger) WithField(key string, value interface{}) *CompatibleLogger {
 	return &CompatibleLogger{l._log.With(zap.Any(key, value))}
 }
 
-// WithField return a logger with a extra field.
+// WithFields return a logger with extra fields.
 func (l *CompatibleLogger) WithFields(fields map[string]interface{}) *CompatibleLogger {
 	i := 0
 	var clog *CompatibleLogger
