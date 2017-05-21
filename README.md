@@ -32,7 +32,7 @@ type CompatibleLogger struct {
     log/prometheus. it implements Print() Println() Printf() Dbug()
     Debugln() Debugf() Info() Infoln() Infof() Warn() Warnln() Warnf()
     Error() Errorln() Errorf() Fatal() Fataln() Fatalf() Panic() Panicln()
-    Panicf() With()
+    Panicf() With() WithField() WithFields()
 
 func NewCompatibleLogger(debugLevel bool) *CompatibleLogger
     NewCompatibleLogger return CompatibleLogger with caller field

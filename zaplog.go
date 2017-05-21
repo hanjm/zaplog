@@ -62,7 +62,8 @@ func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger) {
 }
 
 // CompatibleLogger is a logger which compatible to logrus/std log/prometheus.
-// it implements Print() Println() Printf() Dbug() Debugln() Debugf() Info() Infoln() Infof() Warn() Warnln() Warnf() Error() Errorln() Errorf() Fatal() Fataln() Fatalf() Panic() Panicln() Panicf() With()
+// it implements Print() Println() Printf() Dbug() Debugln() Debugf() Info() Infoln() Infof() Warn() Warnln() Warnf()
+// Error() Errorln() Errorf() Fatal() Fataln() Fatalf() Panic() Panicln() Panicf() With() WithField() WithFields()
 type CompatibleLogger struct {
 	_log *zap.Logger
 }
