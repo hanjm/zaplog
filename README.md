@@ -11,14 +11,6 @@ func CallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder
     "filename:lineNum:funcName",
     e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
 
-func Concat1(str1, str2, str3 string) string
-
-func Concat2(str1, str2, str3 string) string
-
-func Concat3(str1, str2, str3 string) string
-
-func Concat4(str1, str2, str3 string) string
-
 func FormatStdLog()
     FormatStdLog set the output of stand package log to zaplog
 
