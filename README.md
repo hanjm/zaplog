@@ -101,13 +101,13 @@ func (l CompatibleLogger) Warnln(args ...interface{})
     Warnln logs a message at level Warn on the compatibleLogger.
 
 func (l *CompatibleLogger) With(key string, value interface{}) *CompatibleLogger
-    With return a logger with a extra field.
+    With return a logger with an extra field.
 
 func (l *CompatibleLogger) WithField(key string, value interface{}) *CompatibleLogger
-    WithField return a logger with a extra field.
+    WithField return a logger with an extra field.
 
 func (l *CompatibleLogger) WithFields(fields map[string]interface{}) *CompatibleLogger
-    WithField return a logger with a extra field.
+    WithFields return a logger with extra fields.
 
 
 ```
