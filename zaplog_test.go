@@ -18,10 +18,20 @@ func TestNewLogger(t *testing.T) {
 }
 
 func TestNewCustomLoggers(t *testing.T) {
-	logger, noCallerLogger, compatibleLogger := NewCustomLoggers(true)
+	logger, noCallerLogger := NewCustomLoggers(true)
 	logger.Info("normalLogger")
 	noCallerLogger.Info("noCallerLogger")
-	compatibleLogger.Print("compatibleLogger")
+}
+
+func TestNewCompatibleLogger(t *testing.T) {
+	compatibleLogger := NewCompatibleLogger(true)
+	compatibleLogger.Print("compatibleLogger Info")
+	compatibleLogger.Printf("compatibleLogger Infof :%v", 1)
+	compatibleLogger.WithField("field", "value").Info("compatibleLogger with info")
+	withFieldLogger := compatibleLogger.WithFields(map[string]interface{}{"field1": "value1", "field2": "value2"})
+	withFieldLogger.Info("withFieldLogger Info")
+	withFieldLogger.With("field3", "value3").Info("with filed3")
+	withFieldLogger.Debugf("withFieldLogger debugf:%v", 1)
 }
 
 func BenchmarkStdLogger(b *testing.B) {
