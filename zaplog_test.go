@@ -34,8 +34,8 @@ func TestNewCustomLogger(t *testing.T) {
 
 func TestNewCompatibleLogger(t *testing.T) {
 	compatibleLogger := NewCompatibleLogger(true)
-	compatibleLogger.Print("compatibleLogger Info")
-	compatibleLogger.Printf("compatibleLogger Infof :%v", 1)
+	compatibleLogger.Print("compatibleLogger Print")
+	compatibleLogger.Printf("compatibleLogger Printf :%v", 1)
 	compatibleLogger.WithField("field", "value").Info("compatibleLogger with info")
 	withFieldLogger := compatibleLogger.WithFields(map[string]interface{}{"field1": "value1", "field2": "value2"})
 	withFieldLogger.Info("withFieldLogger Info")
