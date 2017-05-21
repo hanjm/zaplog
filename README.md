@@ -6,22 +6,20 @@
 ### Document
 
 ```go
-func CallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder)
-    CallerEncoder will add caller to log. format is
-    "filename:lineNum:funcName",
-    e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
-
 func FormatStdLog()
     FormatStdLog set the output of stand package log to zaplog
 
-func NewCustomLoggers(debugLevel bool) (logger, noCallerLogger *zap.Logger)
-    NewCustomLoggers is a shortcut to get normal logger, noCallerLogger.
+func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder) (logger *zap.Logger)
+    NewCustomLogger return a normal logger with given timeEncoder
 
 func NewLogger(debugLevel bool) (logger *zap.Logger)
     NewLogger return a normal logger
 
 func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger)
     NewNoCallerLogger return a no caller key value, will be faster
+
+func NewNormalLoggers(debugLevel bool) (logger, noCallerLogger *zap.Logger)
+    NewNormalLoggers is a shortcut to get normal logger, noCallerLogger.
 
 TYPES
 

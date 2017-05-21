@@ -8,41 +8,46 @@ import (
 	"log"
 	"runtime"
 	"strings"
+	"time"
 )
 
-// CallerEncoder will add caller to log. format is "filename:lineNum:funcName", e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
-func CallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
+// callerEncoder will add caller to log. format is "filename:lineNum:funcName", e.g:"zaplog/zaplog_test.go:15:zaplog.TestNewLogger"
+func callerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(strings.Join([]string{caller.TrimmedPath(), runtime.FuncForPC(caller.PC).Name()}, ":"))
 }
 
-func newLoggerConfig(debugLevel bool) (loggerConfig zap.Config) {
+// timeEncoder specifics the time format
+func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(t.Format("2006-01-02 15:04:05"))
+}
+
+func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder) (loggerConfig zap.Config) {
 	loggerConfig = zap.NewProductionConfig()
-	loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	loggerConfig.EncoderConfig.EncodeCaller = CallerEncoder
+	if te == nil {
+		loggerConfig.EncoderConfig.EncodeTime = timeEncoder
+	} else {
+		loggerConfig.EncoderConfig.EncodeTime = te
+	}
+	loggerConfig.EncoderConfig.EncodeCaller = callerEncoder
 	if debugLevel {
 		loggerConfig.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 	}
 	return
 }
 
-// NewCustomLoggers is a shortcut to get normal logger, noCallerLogger.
-func NewCustomLoggers(debugLevel bool) (logger, noCallerLogger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel)
+// NewLogger return a normal logger
+func NewLogger(debugLevel bool) (logger *zap.Logger) {
+	loggerConfig := newLoggerConfig(debugLevel, nil)
 	logger, err := loggerConfig.Build()
-	if err != nil {
-		panic(err)
-	}
-	loggerConfig.DisableCaller = true
-	noCallerLogger, err = loggerConfig.Build()
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-// NewLogger return a normal logger
-func NewLogger(debugLevel bool) (logger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel)
+// NewCustomLogger return a normal logger with given timeEncoder
+func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder) (logger *zap.Logger) {
+	loggerConfig := newLoggerConfig(debugLevel, te)
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic(err)
@@ -52,9 +57,24 @@ func NewLogger(debugLevel bool) (logger *zap.Logger) {
 
 // NewNoCallerLogger return a no caller key value, will be faster
 func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel)
+	loggerConfig := newLoggerConfig(debugLevel, nil)
 	loggerConfig.DisableCaller = true
 	noCallerLogger, err := loggerConfig.Build()
+	if err != nil {
+		panic(err)
+	}
+	return
+}
+
+// NewNormalLoggers is a shortcut to get normal logger, noCallerLogger.
+func NewNormalLoggers(debugLevel bool) (logger, noCallerLogger *zap.Logger) {
+	loggerConfig := newLoggerConfig(debugLevel, nil)
+	logger, err := loggerConfig.Build()
+	if err != nil {
+		panic(err)
+	}
+	loggerConfig.DisableCaller = true
+	noCallerLogger, err = loggerConfig.Build()
 	if err != nil {
 		panic(err)
 	}

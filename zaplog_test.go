@@ -1,8 +1,10 @@
 package zaplog
 
 import (
+	"go.uber.org/zap/zapcore"
 	"log"
 	"testing"
+	"time"
 )
 
 func TestFormatStdLog(t *testing.T) {
@@ -17,10 +19,17 @@ func TestNewLogger(t *testing.T) {
 	logger.Debug("zap log debug msg")
 }
 
-func TestNewCustomLoggers(t *testing.T) {
-	logger, noCallerLogger := NewCustomLoggers(true)
+func TestNewNormalLoggers(t *testing.T) {
+	logger, noCallerLogger := NewNormalLoggers(true)
 	logger.Info("normalLogger")
 	noCallerLogger.Info("noCallerLogger")
+}
+
+func TestNewCustomLogger(t *testing.T) {
+	logger := NewCustomLogger(false, func(t time.Time, ec zapcore.PrimitiveArrayEncoder) {
+		ec.AppendInt64(t.Unix())
+	})
+	logger.Info("unix timestamp")
 }
 
 func TestNewCompatibleLogger(t *testing.T) {
