@@ -21,9 +21,9 @@ func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05"))
 }
 
-// microSecondsDurationEncoder serializes a time.Duration to a floating-point number of micro seconds elapsed.
-func microSecondsDurationEncoder(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendFloat64(float64(d) / float64(time.Microsecond))
+// millionSecondsDurationEncoder serializes a time.Duration to a floating-point number of micro seconds elapsed.
+func millionSecondsDurationEncoder(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendFloat64(float64(d) / float64(time.Millisecond))
 }
 
 func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder, de zapcore.DurationEncoder) (loggerConfig zap.Config) {
@@ -34,7 +34,7 @@ func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder, de zapcore.Duratio
 		loggerConfig.EncoderConfig.EncodeTime = te
 	}
 	if de == nil {
-		loggerConfig.EncoderConfig.EncodeDuration = microSecondsDurationEncoder
+		loggerConfig.EncoderConfig.EncodeDuration = millionSecondsDurationEncoder
 	} else {
 		loggerConfig.EncoderConfig.EncodeDuration = de
 	}
@@ -252,7 +252,7 @@ func (w logWriter) Write(p []byte) (n int, err error) {
 	i = bytes.LastIndex(caller, []byte("/"))
 	// find penultimate index of /
 	i = bytes.LastIndex(caller[:i], []byte("/"))
-	w.logger.Info("stdLog", zap.ByteString("caller", caller[i + 1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
+	w.logger.Info("stdLog", zap.ByteString("caller", caller[i+1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
 	n = len(p)
 	err = nil
 	return
