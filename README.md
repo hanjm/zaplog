@@ -9,7 +9,7 @@
 func FormatStdLog()
     FormatStdLog set the output of stand package log to zaplog
 
-func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder) (logger *zap.Logger)
+func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder, de zapcore.DurationEncoder) (logger *zap.Logger)
     NewCustomLogger return a normal logger with given timeEncoder
 
 func NewLogger(debugLevel bool) (logger *zap.Logger)

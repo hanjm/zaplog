@@ -28,7 +28,8 @@ func TestNewNormalLoggers(t *testing.T) {
 func TestNewCustomLogger(t *testing.T) {
 	logger := NewCustomLogger(false, func(t time.Time, ec zapcore.PrimitiveArrayEncoder) {
 		ec.AppendInt64(t.Unix())
-	})
+	},
+		zapcore.SecondsDurationEncoder)
 	logger.Info("unix timestamp")
 }
 

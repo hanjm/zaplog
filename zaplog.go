@@ -21,12 +21,22 @@ func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05"))
 }
 
-func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder) (loggerConfig zap.Config) {
+// microSecondsDurationEncoder serializes a time.Duration to a floating-point number of micro seconds elapsed.
+func microSecondsDurationEncoder(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendFloat64(float64(d) / float64(time.Microsecond))
+}
+
+func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder, de zapcore.DurationEncoder) (loggerConfig zap.Config) {
 	loggerConfig = zap.NewProductionConfig()
 	if te == nil {
 		loggerConfig.EncoderConfig.EncodeTime = timeEncoder
 	} else {
 		loggerConfig.EncoderConfig.EncodeTime = te
+	}
+	if de == nil {
+		loggerConfig.EncoderConfig.EncodeDuration = microSecondsDurationEncoder
+	} else {
+		loggerConfig.EncoderConfig.EncodeDuration = de
 	}
 	loggerConfig.EncoderConfig.EncodeCaller = callerEncoder
 	if debugLevel {
@@ -37,7 +47,7 @@ func newLoggerConfig(debugLevel bool, te zapcore.TimeEncoder) (loggerConfig zap.
 
 // NewLogger return a normal logger
 func NewLogger(debugLevel bool) (logger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel, nil)
+	loggerConfig := newLoggerConfig(debugLevel, nil, nil)
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic(err)
@@ -46,8 +56,8 @@ func NewLogger(debugLevel bool) (logger *zap.Logger) {
 }
 
 // NewCustomLogger return a normal logger with given timeEncoder
-func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder) (logger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel, te)
+func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder, de zapcore.DurationEncoder) (logger *zap.Logger) {
+	loggerConfig := newLoggerConfig(debugLevel, te, de)
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic(err)
@@ -57,7 +67,7 @@ func NewCustomLogger(debugLevel bool, te zapcore.TimeEncoder) (logger *zap.Logge
 
 // NewNoCallerLogger return a no caller key value, will be faster
 func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel, nil)
+	loggerConfig := newLoggerConfig(debugLevel, nil, nil)
 	loggerConfig.DisableCaller = true
 	noCallerLogger, err := loggerConfig.Build()
 	if err != nil {
@@ -68,7 +78,7 @@ func NewNoCallerLogger(debugLevel bool) (noCallerLogger *zap.Logger) {
 
 // NewNormalLoggers is a shortcut to get normal logger, noCallerLogger.
 func NewNormalLoggers(debugLevel bool) (logger, noCallerLogger *zap.Logger) {
-	loggerConfig := newLoggerConfig(debugLevel, nil)
+	loggerConfig := newLoggerConfig(debugLevel, nil, nil)
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic(err)
@@ -242,6 +252,8 @@ func (w logWriter) Write(p []byte) (n int, err error) {
 	i = bytes.LastIndex(caller, []byte("/"))
 	// find penultimate index of /
 	i = bytes.LastIndex(caller[:i], []byte("/"))
-	w.logger.Info("stdLog", zap.ByteString("caller", caller[i+1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
-	return len(p), nil
+	w.logger.Info("stdLog", zap.ByteString("caller", caller[i + 1:]), zap.ByteString("log", bytes.TrimSpace(p[j:])))
+	n = len(p)
+	err = nil
+	return
 }
